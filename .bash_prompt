@@ -39,7 +39,7 @@ render_identity() {
 		label="$USER@$HOSTNAME"
 	elif is_git; then
 		label=$(get_git_project)
-		glyph="󰊢"
+		if $use_glyphs; then glyph="󰊢"; else glyph="G"; fi
 	else
 		label="$HOSTNAME"
 	fi
@@ -217,7 +217,7 @@ declare use_badges=true
 ## Define custom colours
 declare colour_primary="f5992e"
 declare colour_secondary="785cea"
-declare colour_neutral="5f5f87"
+declare colour_neutral="C7C5C5"
 declare colour_error="f23a66"
 declare colour_global
 
@@ -238,7 +238,7 @@ fi
 PS1=""
 PS2="> " 
 ## For bash >v4
-# PROMPT_DIRTRIM=2
+PROMPT_DIRTRIM=2
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 export GIT_PS1_SHOWSTASHSTATE=true
 export GIT_PS1_SHOWDIRTYSTATE=true
@@ -259,6 +259,3 @@ for segment in "${segments[@]}"; do
 	fi
 
 done
-
-# Prepend blank line except after startup or clear
-__print_blank() { [[ -n $__was_printed ]] && echo; __was_printed=1; }
