@@ -141,15 +141,31 @@
 #    where the git status is not at the last line, e.g.:
 #      PS1='\n\w \u@\h$(__git_ps1 " (%s)")\n\$ '
 
-declare untracked_file_symbol=""
+
+declare untracked_file_symbol="  "
 declare tracked_file_symbol="󰷫"
-declare staged_file_symbol=""
-declare stashed_file_symbol=""
-declare equal_to_upstream_symbol="󰅠"
-declare ahead_of_upstream_symbol=""
-declare behind_upstream_symbol=""
-declare diverged_upstream_symbol=""
-declare no_upstream_symbol="󰅤"
+declare staged_file_symbol="  "
+declare stashed_file_symbol="  "
+declare equal_to_upstream_symbol=" 󰅠 "
+declare ahead_of_upstream_symbol="  "
+declare behind_upstream_symbol="  "
+declare diverged_upstream_symbol=" 󰥖 "
+declare no_upstream_symbol=" 󰅤 "
+
+declare use_glyphs=true
+
+if [ "$use_glyphs" = false ]; then
+	untracked_file_symbol=" %"
+	tracked_file_symbol=" *"
+	staged_file_symbol=" +"
+	stashed_file_symbol=" $"
+	equal_to_upstream_symbol=" ="
+	ahead_of_upstream_symbol=" >"
+	behind_upstream_symbol=" <"
+	diverged_upstream_symbol=" <>"
+	no_upstream_symbol=" !"
+fi
+
 
 # check whether printf supports -v
 __git_printf_supports_v=
@@ -270,22 +286,22 @@ __git_ps1_show_upstream ()
 	if [ -z "$verbose" ]; then
 		case "$count" in
 		"") # no upstream
-			p="$no_upstream_symbol " ;;
+			p="$no_upstream_symbol" ;;
 		"0	0") # equal to upstream
-			p="$equal_to_upstream_symbol " ;;
+			p="$equal_to_upstream_symbol" ;;
 		"0	"*) # ahead of upstream
-			p="$ahead_of_upstream_symbol " ;;
+			p="$ahead_of_upstream_symbol" ;;
 		*"	0") # behind upstream
-			p="$behind_upstream_symbol " ;;
+			p="$behind_upstream_symbol" ;;
 		*)	    # diverged from upstream
-			p="$diverged_upstream_symbol " ;;
+			p="$diverged_upstream_symbol" ;;
 		esac
 	else # verbose, set upstream instead of p
 		case "$count" in
 		"") # no upstream
-			upstream="$no_upstream_symbol " ;;
+			upstream="$no_upstream_symbol" ;;
 		"0	0") # equal to upstream
-			upstream="$equal_to_upstream_symbol " ;;
+			upstream="$equal_to_upstream_symbol" ;;
 		"0	"*) # ahead of upstream
 			upstream="$ahead_of_upstream_symbol +${count#0	} " ;;
 		*"	0") # behind upstream
@@ -623,8 +639,8 @@ __git_ps1 ()
 		if [ -n "${GIT_PS1_SHOWDIRTYSTATE-}" ] &&
 		   [ "$(git config --bool bash.showDirtyState)" != "false" ]
 		then
-			git diff --no-ext-diff --quiet || w="$tracked_file_symbol "
-			git diff --no-ext-diff --cached --quiet || i="$staged_file_symbol "
+			git diff --no-ext-diff --quiet || w="$tracked_file_symbol"
+			git diff --no-ext-diff --cached --quiet || i="$staged_file_symbol"
 			if [ -z "$short_sha" ] && [ -z "$i" ]; then
 				i="# "
 			fi
@@ -632,7 +648,7 @@ __git_ps1 ()
 		if [ -n "${GIT_PS1_SHOWSTASHSTATE-}" ] &&
 		   git rev-parse --verify --quiet refs/stash >/dev/null
 		then
-			s="$stashed_file_symbol "
+			s="$stashed_file_symbol"
 		fi
 
 		if [ -n "${GIT_PS1_SHOWUNTRACKEDFILES-}" ] &&
